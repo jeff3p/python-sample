@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: python-sample
+  name: python-sample
+  annotations: {}
+spec:
+  selector:
+    matchLabels:
+      app: python-sample
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: python-sample
+    spec:
+      containers:
+        - name: container
+          image: 'quay.io/jfronius/python-sample:v1'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env: []
+      imagePullSecrets: []
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  paused: false
