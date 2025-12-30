@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi10/ubi-minimal:10.1-1766033715
+FROM registry.access.redhat.com/ubi10/ubi-minimal:latest
 RUN microdnf -y install python3 python3-pip && microdnf -y clean all
 WORKDIR /opt/app
 COPY app.py .
