@@ -71,7 +71,7 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.log_message('"%s %s" %s', "GET", self.path, 404)
         return
 
-def run(host="127.0.0.1", port=8080):
+def run(host="0.0.0.0", port=8080):
     server = HTTPServer((host, port), SimpleHandler)
     logger.info(f"Serving on http://{host}:{port}")
     server.serve_forever()
