@@ -1,30 +1,56 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: python-sample
   name: python-sample
-  annotations: {}
+  labels:
+    app: python-sample
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: python-sample
-  replicas: 2
   template:
     metadata:
       labels:
         app: python-sample
     spec:
+      # OpenShift best practice: run as non-root and allow the platform to assign a UID
+      securityContext:
+        runAsNonRoot: true
+        # Do NOT set a specific runAsUser; OpenShift will inject a random UID that must be allowed by the image
       containers:
-        - name: container
-          image: 'quay.io/jfronius/python-sample:v1'
+        - name: python-sample
+          #image: python-sample:latest
+          image: quay.io/jfronius/python-sample:v1
+          imagePullPolicy: Always
+          env:
+            - name: SAMPLE
+              value: "SAMPLE"
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
               protocol: TCP
-          env: []
-      imagePullSecrets: []
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-  paused: false
+          # Liveness & readiness probes
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
