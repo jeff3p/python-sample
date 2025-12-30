@@ -1,0 +1,9 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: python-sample-rt
+  namespace: python-sample
+spec:
+  to:
+    name: 'python-sample-svc'
+    kind: Service
